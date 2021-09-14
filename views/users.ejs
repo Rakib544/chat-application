@@ -14,9 +14,15 @@
   </head>
   <body>
     <div class="menu">
+      <% if(loggedInUser && loggedInUser.username) { %>
+      <div class="menu-item"><a href="/inbox">Inbox</a></div>
+      <div class="menu-item"><a href="/users">Users</a></div>
+      <div class="menu-item"><a href="#" onclick="logout()">Logout</a></div>
+      <% } else { %>
       <div class="menu-item"><a href="/inbox">Inbox</a></div>
       <div class="menu-item"><a href="/users">Users</a></div>
       <div class="menu-item"><a href="/">Login</a></div>
+      <% } %>
     </div>
 
     <div class="manageUser-container">
@@ -38,16 +44,26 @@
             </tr>
           </thead>
           <tbody id="users-table">
-            <tr id="">
+            <% users.forEach(function(user) { %>
+            <tr id="<%= user._id %>">
               <td class="name">
-                <img src="./images/user1.png" />
-                <span>User 1</span>
+                <% if (user.avatar) { %>
+                <img src="./uploads/avatars/<%= user.avatar %>" />
+                <% } else { %>
+                <img src="./images/nophoto.png" />
+                <% } %>
+                <span><%= user.name %></span>
               </td>
-              <td>email@email.com</td>
+              <td><%= user.email %></td>
               <td class="manage">
-                <img src="./images/trash.png" alt="Delete" />
+                <img
+                  src="./images/trash.png"
+                  alt="Delete"
+                  onclick="deleteUser('<%= user._id %>')"
+                />
               </td>
             </tr>
+            <% }); %>
           </tbody>
         </table>
       </div>
@@ -158,6 +174,45 @@
           }, 1000);
         }
       };
+
+      const logoutToast = Toastify({
+        text: "You are being logout ...",
+        duration: 10000,
+      });
+      function logout() {
+        logoutToast.showToast();
+        fetch("/", {
+          method: "DELETE",
+        });
+
+        setTimeout(() => {
+          window.location.replace("/");
+        }, 1000);
+      }
+
+      // toasts
+      const deleteToast = Toastify({
+        text: "User was deleted successfully!",
+        duration: 3000,
+      });
+      const deleteErrorToast = Toastify({
+        text: "Could not delete the user!",
+        duration: 3000,
+      });
+
+      // delete user function
+      async function deleteUser(userId) {
+        let response = await fetch(`/users/${userId}`, {
+          method: "DELETE",
+        });
+        let result = await response.json();
+        if (result.errors) {
+          deleteErrorToast.showToast();
+        } else {
+          deleteToast.showToast();
+          document.getElementById(userId).remove();
+        }
+      }
     </script>
   </body>
 </html>
