@@ -1,4 +1,4 @@
-const uploader = require("../../utilities/singleUploader");
+const uploads = require("../../utilities/singleUploader");
 
 function avatarUpload(req, res, next) {
   const upload = uploads(

@@ -19,9 +19,12 @@ dotenv.config();
 
 //database connection
 mongoose
-  .connect(process.env.MONGO_URL, {
-    useUnifiedTopology: true,
-  })
+  .connect(
+    "mongodb+srv://chatApp:chatApp123@personalproject.ffrap.mongodb.net/chatApplication?retryWrites=true&w=majority",
+    {
+      useUnifiedTopology: true,
+    }
+  )
   .then(() => console.log("Database connection successful"))
   .catch((err) => console.log(err));
 
